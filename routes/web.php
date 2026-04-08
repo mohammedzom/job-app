@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobApplicationsController;
+use App\Http\Controllers\JobVacanciesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('job-applications', JobApplicationsController::class)->names('job-applications');
+
+    Route::get('job-vacancies/{id}', [JobVacanciesController::class, 'show'])->name('job-vacancies.show');
+    Route::get('job-vacancies/{id}/apply', [JobVacanciesController::class, 'apply'])->name('job-vacancies.apply');
+
+    Route::post('job-vacancies/{id}/apply', [JobApplicationsController::class, 'store'])->name('applications.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

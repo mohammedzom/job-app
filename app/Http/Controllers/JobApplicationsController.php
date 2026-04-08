@@ -2,33 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JobApplications;
+use App\Http\Requests\JobApplication\JobApplicationCreateRequest;
 use Illuminate\Http\Request;
 
 class JobApplicationsController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $applications = JobApplications::all();
-
-        return view('job-applications.index', compact('applications'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(JobApplicationCreateRequest $request)
     {
         //
     }
