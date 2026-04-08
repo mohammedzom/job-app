@@ -73,6 +73,8 @@
                         <x-primary-button class="w-full">Apply</x-primary-button>
                     </form>
 
+                    <p>{{ $gemini }}</p>
+
         </div>
     </div>
 

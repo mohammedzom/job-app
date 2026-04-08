@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JobUserViews;
 use App\Models\JobVacancies;
+use Gemini;
 use Illuminate\Support\Facades\Auth;
 
 class JobVacanciesController extends Controller
@@ -31,7 +32,20 @@ class JobVacanciesController extends Controller
         $user = Auth::user();
         $jobVacancy = JobVacancies::with('company')->findOrFail($id);
         $resumes = $user->resumes;
+        $gemini = $this->testGemini();
 
-        return view('job-vacancies.apply', compact('jobVacancy', 'resumes'));
+        return view('job-vacancies.apply', compact('jobVacancy', 'resumes', 'gemini'));
+    }
+
+    public function testGemini()
+    {
+
+        $apiKey = env('GEMINI_API_KEY');
+        $client = Gemini::client($apiKey);
+
+        $model = $client->generativeModel('gemini-3-flash-preview');
+        $result = $model->generateContent('1+1=??');
+
+        return $result->text();
     }
 }
