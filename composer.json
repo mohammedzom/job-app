@@ -16,9 +16,9 @@
     ],
     "require": {
         "php": "^8.3",
+        "job/shared": "*",
         "laravel/framework": "^13.0",
-        "laravel/tinker": "^3.0",
-        "job/shared": "*"
+        "laravel/tinker": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
