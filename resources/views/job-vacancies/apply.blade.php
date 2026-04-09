@@ -21,24 +21,35 @@
                                     <p class="text-sm text-gray-400">•</p>
                                     <p class="text-sm text-gray-400">{{ '$' . number_format(num: $jobVacancy->salary) }}
                                     </p>
-                                    <p class="text-sm bg-indigo-500 text-white p-2 rounded-lg">{{ $jobVacancy->type }}
-                                    </p>
+                                    <p class="text-sm bg-indigo-500 text-white p-2 rounded-lg">
+                                        {{ Str::ucfirst(str_replace('_', '-', $jobVacancy->type)) }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <form action="{{ route(name: 'job-applications.store', parameters: $jobVacancy->id) }}"
-                        method="POST" class="space-y-6">
+                    <form action="{{ route(name: 'job-applications.store') }}" method="POST" class="space-y-6"
+                        enctype="multipart/form-data">
                         @csrf
-
+                        <input type="hidden" name="job_id" value="{{ $job_id }}">
+                        @if ($errors->any())
+                            <div class="bg-red-500 text-white p-4 rounded-lg">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div>
                             <h3 class="text-xl font-semibold text-white mb-4">Choose Your Resume</h3>
                             @foreach ($resumes as $resume)
                                 <div class="mb-6">
-                                    <x-input-label for="resume" value="Select from your existing resumes:" />
-                                    <x-input-label for="resume" value="{{ $resume->file_name }}" />
-                                    <input type="radio" name="resume_id" value="{{ $resume->id }}" />
+                                    <x-input-label name="resume_file" for="resume"
+                                        value="Select from your existing resumes:" />
+                                    <x-input-label name="resume_file" for="resume"
+                                        value="{{ $resume->file_name }}" />
+                                    <input type="radio" name="resume_file" value="{{ $resume->file_url }}" />
                                 </div>
                             @endforeach
                         </div>
@@ -72,9 +83,6 @@
 
                         <x-primary-button class="w-full">Apply</x-primary-button>
                     </form>
-
-                    <p>{{ $gemini }}</p>
-
         </div>
     </div>
 
