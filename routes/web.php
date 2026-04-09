@@ -4,10 +4,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobApplicationsController;
 use App\Http\Controllers\JobVacanciesController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return Auth::check() ? redirect()->route('dashboard') : view('welcome');
 });
 
 Route::middleware('auth')->group(function () {
@@ -15,6 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('job-applications', JobApplicationsController::class)->names('job-applications');
+    Route::put('job-applications/{id}/restore', [JobApplicationsController::class, 'restore'])->name('job-applications.restore');
 
     Route::get('job-vacancies/{id}', [JobVacanciesController::class, 'show'])->name('job-vacancies.show');
     Route::get('job-vacancies/{id}/apply', [JobVacanciesController::class, 'apply'])->name('job-vacancies.apply');

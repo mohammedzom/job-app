@@ -43,26 +43,41 @@
                         @endif
                         <div>
                             <h3 class="text-xl font-semibold text-white mb-4">Choose Your Resume</h3>
-                            @foreach ($resumes as $resume)
-                                <div class="mb-6">
-                                    <x-input-label name="resume_file" for="resume"
-                                        value="Select from your existing resumes:" />
-                                    <x-input-label name="resume_file" for="resume"
-                                        value="{{ $resume->file_name }}" />
-                                    <input type="radio" name="resume_file" value="{{ $resume->file_url }}" />
-                                </div>
-                            @endforeach
+                            <div class="space-y-4">
+
+                                @forelse ($resumes as $resume)
+                                    <div class="flex items-center gap-2">
+                                        <input type="radio" name="resume_option" id="{{ $resume->id }}"
+                                            value="{{ $resume->id }}"
+                                            @error('resume_option') class="border-red-500" @else class="border-gray-600" @enderror />
+                                        <x-input-label class="text-white cursor-pointer" for="{{ $resume->id }}"
+                                            value="{{ $resume->file_name }}" />
+                                        <span class="text-gray-400 text-sm">Last Updated:
+                                            {{ $resume->updated_at->format('Y-m-d') }}</span>
+                                    </div>
+                                @empty
+                                    <p class="text-white text-sm">No resumes found</p>
+                                @endforelse
+                            </div>
                         </div>
 
                         <div x-data="{ fileName: '', hasError: {{ $errors->has('resume_file') ? 'true' : 'false' }} }">
-                            <x-input-label for="resume" value="Or upload a new resume:" />
+                            <div class="flex items-center gap-2">
+                                <input x-ref="newResumeRadio" type="radio" name="resume_option" id="new_resume"
+                                    value="new_resume"
+                                    @error('resume_option') class="border-red-500" @else class="border-gray-600" @enderror />
+                                <x-input-label class="text-white cursor-pointer" for="new_resume"
+                                    value="upload a new resume:" />
+                            </div>
                             <div class="flex items-center">
                                 <div class="flex-1">
                                     <label for="new_resume_file" class="block text-white cursor-pointer">
                                         <div class="border-2 border-dashed border-gray-600 rounded-lg p-4 hover:border-blue-500 transition"
                                             :class="{ 'border-blue-500': fileName, 'border-red-500': hasError }">
-                                            <input @change="fileName = $event.target.files[0].name" type="file"
-                                                name="resume_file" id="new_resume_file" class="hidden" accept=".pdf" />
+                                            <input
+                                                @change="fileName = $event.target.files[0].name; $refs.newResumeRadio.checked = true;"
+                                                type="file" name="resume_file" id="new_resume_file" class="hidden"
+                                                accept=".pdf" />
                                             <div class="text-center">
                                                 <template x-if="!fileName">
                                                     <p class="text-gray-400">Click to upload PDF (Max 5MB)</p>

@@ -19,7 +19,8 @@
         "google-gemini-php/client": "^2.7",
         "job/shared": "*",
         "laravel/framework": "^13.0",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "spatie/pdf-to-text": "^1.55"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
