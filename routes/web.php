@@ -15,7 +15,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('job-applications', JobApplicationsController::class)->names('job-applications');
+    Route::resource('job-applications', JobApplicationsController::class)->names('job-applications')->except(['edit', 'update']);
+
     Route::put('job-applications/{id}/restore', [JobApplicationsController::class, 'restore'])->name('job-applications.restore');
 
     Route::get('job-vacancies/{id}', [JobVacanciesController::class, 'show'])->name('job-vacancies.show');

@@ -18,7 +18,6 @@ class ResumeAnalysisService
     {
         try {
             $raw_text = $this->extractTextFromPdf($file_path);
-            Log::debug('raw_text: '.$raw_text);
             $apiKey = env('GEMINI_API_KEY');
             $client = Gemini::client($apiKey);
 
@@ -44,13 +43,10 @@ class ResumeAnalysisService
                     ->withGenerationConfig($generationConfig)
                     ->generateContent($prompt);
             }, 2000);
-            Log::debug('Gemini API response: '.$result->text());
             $parseResult = json_decode($result->text(), true);
-            Log::debug('parseResult: '.json_encode($parseResult));
             $requiredKeys = ['summary', 'skills', 'experience', 'education'];
             $missingKeys = array_diff($requiredKeys, array_keys($parseResult));
             if (! empty($missingKeys)) {
-                Log::debug('Missing keys: '.implode(', ', $missingKeys));
                 throw new \Exception('Missing required keys in parse result');
             }
 
@@ -132,13 +128,10 @@ class ResumeAnalysisService
                     ->withGenerationConfig($generationConfig)
                     ->generateContent($prompt);
             }, 2000);
-            Log::debug('Gemini API response: '.$result->text());
             $parseResult = json_decode($result->text(), true);
-            Log::debug('parseResult: '.json_encode($parseResult));
             $requiredKeys = ['ai_generated_score', 'ai_generated_feedback'];
             $missingKeys = array_diff($requiredKeys, array_keys($parseResult));
             if (! empty($missingKeys)) {
-                Log::debug('Missing keys: '.implode(', ', $missingKeys));
                 throw new \Exception('Missing required keys in parse result');
             }
 
