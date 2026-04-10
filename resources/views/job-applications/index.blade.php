@@ -142,18 +142,28 @@
                                 <span
                                     class="text-xs text-zinc-300">{{ $jobApplication->created_at->format('d M Y') }}</span>
                             </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-zinc-600 text-[10px] uppercase font-bold tracking-tight">Resume
-                                    File</span>
-                                <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}" target="_blank"
-                                    class="text-xs text-blue-400 hover:text-blue-300 font-medium truncate flex items-center">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                    {{ $jobApplication->resume->filename }}
-                                </a>
-                            </div>
+                            @if ($jobApplication->resume)
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-zinc-600 text-[10px] uppercase font-bold tracking-tight">Resume
+                                        File</span>
+                                    <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}"
+                                        target="_blank"
+                                        class="text-xs text-blue-400 hover:text-blue-300 font-medium truncate flex items-center">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                        {{ $jobApplication->resume->file_name }}
+                                    </a>
+                                </div>
+                            @else
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-zinc-600 text-[10px] uppercase font-bold tracking-tight">Resume
+                                        File</span>
+                                    <span class="text-xs text-zinc-300">No resume file found</span>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- AI Feedback --}}

@@ -113,67 +113,84 @@
                         </div>
                     </div>
 
-                    {{-- Resume Details --}}
-                    <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
-                        <h3 class="text-xl font-bold mb-8 flex items-center">
-                            <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Extracted Resume Profile
-                        </h3>
+                    @if ($jobApplication->resume)
+                        {{-- Resume Details --}}
+                        <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
+                            <h3 class="text-xl font-bold mb-8 flex items-center">
+                                <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Extracted Resume Profile
+                            </h3>
 
-                        <div class="space-y-8">
-                            <div>
-                                <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Professional
-                                    Summary</h4>
-                                <p class="text-zinc-300 leading-relaxed">
-                                    {{ is_null($jobApplication->resume->summary) ? 'No summary' : $jobApplication->resume->summary }}
-                                </p>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-8">
                                 <div>
-                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Key
-                                        Skills</h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        @php
-                                            $skills = is_null($jobApplication->resume->skills)
-                                                ? []
-                                                : explode(',', $jobApplication->resume->skills);
-                                        @endphp
-                                        @forelse ($skills as $skill)
-                                            <span
-                                                class="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-700/50">
-                                                {{ $skill }}
-                                            </span>
-                                        @empty
-                                            <span
-                                                class="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-700/50">
-                                                No skills
-                                            </span>
-                                        @endforelse
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Education
-                                    </h4>
-                                    <p class="text-zinc-300 text-sm italic">
-                                        {{ is_null($jobApplication->resume->education) ? 'No education' : $jobApplication->resume->education }}
+                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+                                        Professional
+                                        Summary</h4>
+                                    <p class="text-zinc-300 leading-relaxed">
+                                        {{ is_null($jobApplication->resume->summary) ? 'No summary' : $jobApplication->resume->summary }}
                                     </p>
                                 </div>
-                            </div>
 
-                            <div>
-                                <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Experience
-                                </h4>
-                                <div class="text-zinc-300 text-sm whitespace-pre-line leading-relaxed">
-                                    {{ is_null($jobApplication->resume->experience) ? 'No experience' : $jobApplication->resume->experience }}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Key
+                                            Skills</h4>
+                                        <div class="flex flex-wrap gap-2">
+                                            @php
+                                                $skills = is_null($jobApplication->resume->skills)
+                                                    ? []
+                                                    : explode(',', $jobApplication->resume->skills);
+                                            @endphp
+                                            @forelse ($skills as $skill)
+                                                <span
+                                                    class="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-700/50">
+                                                    {{ $skill }}
+                                                </span>
+                                            @empty
+                                                <span
+                                                    class="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-700/50">
+                                                    No skills
+                                                </span>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+                                            Education
+                                        </h4>
+                                        <p class="text-zinc-300 text-sm italic">
+                                            {{ is_null($jobApplication->resume->education) ? 'No education' : $jobApplication->resume->education }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+                                        Experience
+                                    </h4>
+                                    <div class="text-zinc-300 text-sm whitespace-pre-line leading-relaxed">
+                                        {{ is_null($jobApplication->resume->experience) ? 'No experience' : $jobApplication->resume->experience }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
+                            <h3 class="text-xl font-bold mb-8 flex items-center">
+                                <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Resume Details
+                            </h3>
+                            <p class="text-zinc-300 text-sm italic">Resume Deleted or Not Found</p>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Right Side: Job Context & Actions --}}
@@ -237,16 +254,19 @@
                     <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
                         <h3 class="text-lg font-bold mb-6 text-center">Manage Application</h3>
                         <div class="space-y-4">
-                            <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}" target="_blank"
-                                class="w-full flex items-center justify-center py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                Full Resume View
-                            </a>
+                            @if ($jobApplication->resume)
+                                <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}" target="_blank"
+                                    class="w-full flex items-center justify-center py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Full Resume View
+                                </a>
+                            @endif
 
                             <form action="{{ route('job-applications.destroy', $jobApplication->id) }}"
                                 method="POST">

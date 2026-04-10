@@ -19,6 +19,9 @@
                     <x-nav-link :href="route('job-applications.index')" :active="request()->routeIs('job-applications')" class="text-white">
                         {{ __('My Applications') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('resumes.index')" :active="request()->routeIs('resumes')" class="text-white">
+                        {{ __('Resumes') }}
+                    </x-nav-link>
                 </div>
             </div>
 

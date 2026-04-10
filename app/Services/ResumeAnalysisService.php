@@ -19,6 +19,9 @@ class ResumeAnalysisService
         try {
             $raw_text = $this->extractTextFromPdf($file_path);
             $apiKey = env('GEMINI_API_KEY');
+            if (empty($apiKey)) {
+                throw new \Exception('API key is not set');
+            }
             $client = Gemini::client($apiKey);
 
             // 1. (System Instruction)
@@ -57,7 +60,7 @@ class ResumeAnalysisService
                 'education' => $parseResult['education'] ?? '',
             ];
         } catch (\Exception $e) {
-            Log::debug('Error extracting text from PDF: '.$e->getMessage());
+            Log::debug('Error: '.$e->getMessage());
 
             return [
                 'summary' => '',
@@ -89,6 +92,9 @@ class ResumeAnalysisService
             ]);
 
             $apiKey = env('GEMINI_API_KEY');
+            if (empty($apiKey)) {
+                throw new \Exception('API key is not set');
+            }
             $client = Gemini::client($apiKey);
 
             // 1. (System Instruction)
@@ -154,6 +160,7 @@ class ResumeAnalysisService
     {
         $absolutePath = Storage::disk('public')->path($file_path);
         if (! file_exists($absolutePath)) {
+            Log::debug('File not found: '.$absolutePath);
             throw new \Exception('File not found: '.$absolutePath);
         }
 
