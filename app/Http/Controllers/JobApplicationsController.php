@@ -22,7 +22,7 @@ class JobApplicationsController extends Controller
 
     public function index(Request $request)
     {
-        $query = JobApplications::with('resume', 'job')->where('user_id', Auth::id());
+        $query = JobApplications::with('resume', 'job')->where('user_id', Auth::id())->whereHas('job');
 
         if ($request->has('archived') && $request->archived == 'true') {
             $query->onlyTrashed();
