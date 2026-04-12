@@ -99,7 +99,7 @@ class QwenProvider implements ResumeAnalysisProvider
                 $response = Http::withHeaders([
                     'Authorization' => "Bearer {$this->apiKey}",
                     'Content-Type' => 'application/json',
-                ])->timeout(60)->post(self::BASE_URL, [
+                ])->timeout(120)->post(self::BASE_URL, [
                     'model' => $model,
                     'temperature' => $temp,
                     'response_format' => ['type' => 'json_object'],
