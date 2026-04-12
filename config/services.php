@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'ai_driver' => env('USE_AI', 'api-gemini'),
+    'gemini' => ['key' => env('GEMINI_API_KEY')],
+    'qwen' => ['key' => env('QWEN_API_KEY')],
+    'local_agent' => [
+        'url' => env('LOCAL_AGENT_URL', 'http://localhost:11434/v1/chat/completions'),
+        'extract_model' => env('LOCAL_AGENT_EXTRACT_MODEL', 'llama3.2'),
+        'analyze_model' => env('LOCAL_AGENT_ANALYZE_MODEL', 'llama3.2'),
+    ],
 ];

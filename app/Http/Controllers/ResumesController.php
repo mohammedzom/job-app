@@ -52,6 +52,9 @@ class ResumesController extends Controller
             'skills' => [],
             'experience' => [],
             'education' => [],
+            'projects' => [],
+            'other' => [],
+            'status' => 'pending',
         ]);
         AnalyzeResumeWithAi::dispatch($resume);
 

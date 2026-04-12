@@ -213,6 +213,50 @@
         .rs-exp-achievements li::before {
             content: '›'; color: #6366f1; font-weight: 700; flex-shrink: 0;
         }
+
+        /* Project entries */
+        .rs-proj-item {
+            padding: .9rem 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+        .rs-proj-item:first-child { padding-top: 0; }
+        .rs-proj-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .rs-proj-name { font-size: .88rem; font-weight: 700; color: #e2e8f0; margin-bottom: .25rem; }
+        .rs-proj-desc { font-size: .78rem; color: rgba(255,255,255,.45); line-height: 1.65; margin-bottom: .3rem; }
+        .rs-proj-url {
+            display: inline-flex; align-items: center; gap: .3rem;
+            font-size: .72rem; color: #818cf8; font-weight: 600;
+            text-decoration: none; transition: color .2s;
+        }
+        .rs-proj-url svg { width: 11px; height: 11px; }
+        .rs-proj-url:hover { color: #a5b4fc; }
+
+        /* Other section entries */
+        .rs-other-section { margin-bottom: 1rem; }
+        .rs-other-section:last-child { margin-bottom: 0; }
+
+        .rs-other-section-title {
+            font-size: .75rem; font-weight: 700;
+            color: rgba(255,255,255,.35);
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            margin-bottom: .45rem;
+        }
+
+        .rs-other-tags {
+            display: flex; flex-wrap: wrap; gap: .35rem;
+        }
+
+        .rs-other-tag {
+            display: inline-flex; align-items: center;
+            padding: .2rem .6rem;
+            font-size: .73rem; font-weight: 500;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            color: rgba(255,255,255,.5);
+            border-radius: 9999px;
+        }
     </style>
 
     <div class="rs-show-wrap">
@@ -254,7 +298,7 @@
             </div>
         </div>
 
-        @if($resume->summary)
+        @if($resume->is_analyzed)
             <div class="rs-ai-banner">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
@@ -371,6 +415,74 @@
                     </div>
                 @else
                     <p class="rs-info-body na">Not extracted.</p>
+                @endif
+            </div>
+
+            <!-- Projects (full width) -->
+            @php
+                $projItems = is_array($resume->projects) ? $resume->projects : [];
+            @endphp
+            <div class="rs-info-card full">
+                <div class="rs-section-title">
+                    <span class="marker" style="background:linear-gradient(180deg,#8b5cf6,#c4b5fd);"></span>
+                    Projects
+                </div>
+                @if(count($projItems) > 0)
+                <div>
+                    @foreach($projItems as $proj)
+                        <div class="rs-proj-item">
+                            @if(isset($proj['name']))
+                                <div class="rs-proj-name">{{ $proj['name'] }}</div>
+                            @endif
+                            @if(isset($proj['description']) && $proj['description'])
+                                <div class="rs-proj-desc">{{ $proj['description'] }}</div>
+                            @endif
+                            @if(isset($proj['url']) && $proj['url'])
+                                <a href="{{ $proj['url'] }}" target="_blank" class="rs-proj-url">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                        <polyline points="15 3 21 3 21 9"/>
+                                        <line x1="10" y1="14" x2="21" y2="3"/>
+                                    </svg>
+                                    {{ $proj['url'] }}
+                                </a>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+                @else
+                    <p class="rs-info-body na">Not extracted yet. Re-analyze to populate.</p>
+                @endif
+            </div>
+
+            <!-- Other sections (full width) -->
+            @php
+                $otherSections = is_array($resume->other) ? $resume->other : [];
+            @endphp
+            <div class="rs-info-card full">
+                <div class="rs-section-title">
+                    <span class="marker" style="background:linear-gradient(180deg,#0ea5e9,#7dd3fc);"></span>
+                    Additional Information
+                </div>
+                @if(count($otherSections) > 0)
+                <div>
+                    @foreach($otherSections as $sectionName => $items)
+                        @if(is_array($items) && count($items) > 0)
+                            <div class="rs-other-section">
+                                <div class="rs-other-section-title">{{ $sectionName }}</div>
+                                <div class="rs-other-tags">
+                                    @foreach($items as $item)
+                                        @if(is_string($item) && trim($item))
+                                            <span class="rs-other-tag">{{ trim($item) }}</span>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+                @else
+                    <p class="rs-info-body na">Not extracted yet. Re-analyze to populate.</p>
                 @endif
             </div>
 

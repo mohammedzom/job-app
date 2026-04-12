@@ -32,6 +32,9 @@ class AnalyzeResumeWithAi implements ShouldQueue
             'skills' => $ai_data['skills'],
             'experience' => $ai_data['experience'],
             'education' => $ai_data['education'],
+            'projects' => $ai_data['projects'],
+            'other' => $ai_data['other'],
+            'status' => $ai_data['status'],
         ]);
     }
 }
