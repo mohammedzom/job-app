@@ -17,9 +17,9 @@ class GeminiProvider implements ResumeAnalysisProvider
 {
     use HasResumePrompts;
 
-    private const EXTRACT_MODEL = 'gemini-3.0-pro';
+    private const EXTRACT_MODEL = 'gemini-3.1-flash-lite-preview';
 
-    private const ANALYZE_MODEL = 'gemini-3.0-pro';
+    private const ANALYZE_MODEL = 'gemini-3.1-flash-lite-preview';
 
     private Client $client;
 

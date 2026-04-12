@@ -18,6 +18,10 @@ class AnalyzeResumeWithAi implements ShouldQueue
 
     public $timeout = 120;
 
+    public $tries = 3;
+
+    public $maxExceptions = 3;
+
     public function __construct(Resumes $resume)
     {
         $this->resume = $resume;
