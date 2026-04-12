@@ -1,58 +1,208 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🌐 Shaghalni — Job Platform
 
-## About Laravel
+**A modern, bilingual (Arabic/English) job marketplace connecting employers and job seekers.**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+[![PHP](https://img.shields.io/badge/PHP-8.5-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Alpine.js](https://img.shields.io/badge/Alpine.js-3-77C1D2?style=flat-square&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📌 Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Shaghalni** is the main user-facing application for the Shaghalni Job Platform. It provides a seamless experience for job seekers to find listings, build their profiles, and submit job applications, while also incorporating AI to analyze resumes.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+This project delivers a premium "Cosmic Dark" UI experience, ensuring responsive and highly polished user interactions.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+> **Backend:** Fully developed by **[@mohammedzom](https://github.com/mohammedzom)**  
+> **Frontend / UI:** Designed with the assistance of **AI (Claude by Anthropic / Gemini)**
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## ✨ Key Features
+
+### 👤 Job Seeker Profiles & Resumes
+- Comprehensive user profiles.
+- Integrated Resume Parsing and AI Analysis (extracting skills, education, and experience dynamically).
+- Premium resume view interface inline with modern standards.
+
+### 💼 Job Search & Applications
+- Browse and filter job vacancies dynamically.
+- Detailed job display pages.
+- Job application tracking and management for job seekers.
+
+### 🌍 Internationalization (i18n)
+- Full **English (LTR)** and **Arabic (RTL)** support.
+- Localization of UI strings.
+- RTL layout flips automatically.
+
+### 🎨 Premium UI/UX Design
+- **Cosmic Dark** theme tailored for a high-end experience.
+- Responsive mobile-first layouts.
+- Dynamic interactions, toast notifications, and modals using Alpine.js and Tailwind CSS.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Language | PHP 8.5 |
+| Framework | Laravel 13 |
+| Frontend CSS | Tailwind CSS v4 |
+| Interactivity | Alpine.js v3 |
+| Templating | Blade |
+| Database | MySQL / SQLite |
+| Build Tool | Vite |
+
+---
+
+## 🔗 Related Repositories & Architecture
+
+This application is part of a broader ecosystem. To maintain consistency, **Eloquent Models are shared** between the main job platform and the backoffice dashboard via a local package.
+
+All three projects should ideally be placed in the same parent directory to correctly resolve the local composer path for the shared library.
+
+| Project | Link | Role |
+|---|---|---|
+| 🌐 **Job Platform (User-Facing)** | [mohammedzom/job-app](https://github.com/mohammedzom/job-app) | This repository (Main application for job seekers) |
+| 🏢 **Backoffice Dashboard** | [mohammedzom/job-backoffice](https://github.com/mohammedzom/job-backoffice) | Administration & Company Dashboard |
+| 📦 **Shared Models Library** | [mohammedzom/job-shared](https://github.com/mohammedzom/job-shared) | Local library containing shared Eloquent models |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- PHP >= 8.2
+- Composer
+- Node.js >= 18
+- MySQL or SQLite
+
+### Installation
 
 ```bash
-composer require laravel/boost --dev
+# 1. Create a directory for the project
+mkdir job-project
 
-php artisan boost:install
+# 2. Enter the directory
+cd job-project
+
+# 3. Clone the repository library
+git clone https://github.com/mohammedzom/job-shared.git
+
+# 4. Clone the backoffice
+git clone https://github.com/mohammedzom/job-backoffice.git
+
+# 5. Enter the directory backoffice
+cd job-backoffice
+
+# 6. Install PHP dependencies
+composer install
+
+# 7. Install Node dependencies
+npm install
+
+# 8. Copy environment file and configure
+cp .env.example .env
+php artisan key:generate
+
+# 9. Set up the database in .env (make sure it connects to the same DB as backoffice if needed), then run migrations
+php artisan migrate --seed
+
+# 10. Build frontend assets
+npm run build
+
+# 11. Serve the application (optional)
+php artisan serve --port=8001
+
+# 12. Go back to the parent directory
+cd ..
+
+# 13. Clone this repository
+git clone https://github.com/mohammedzom/job-app.git
+
+# 14. Make sure you have the following directory structure:
+job-project/
+├── job-app/
+├── job-shared/
+└── job-backoffice/
+
+# 15. Enter the directory
+cd job-app
+
+# 16. Install PHP dependencies
+composer install
+
+# 17. Install Node dependencies
+npm install
+
+# 18. Copy environment file and configure
+cp .env.example .env
+php artisan key:generate
+
+# 19. Set up the database in .env (make sure it connects to the same DB as backoffice if needed), then run migrations
+php artisan migrate
+
+# 20. Build frontend assets
+npm run build
+
+# 21. Serve the application
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Development Mode
 
-## Contributing
+```bash
+# Run Vite dev server with hot reload
+npm run dev
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# In a separate terminal, serve Laravel
+php artisan serve
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📁 Project Structure (Key Directories)
 
-## Security Vulnerabilities
+```
+app/
+├── Http/Controllers/       # Controllers for Jobs, Resumes, User Profile...
+├── Services/               # Business logic (e.g. OpenAI parsing)
+└── ...
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+job-shared/ (External package)
+└── src/Models/             # Eloquent models with relationships & casts
 
-## License
+resources/
+├── views/
+│   ├── layouts/            # App shell
+│   ├── components/         # Reusable Blade components
+│   ├── jobs/               # Job vacancy listings & details
+│   ├── resumes/            # Resume building & viewing
+│   └── job-applications/   # Job Application tracking
+├── css/
+│   └── app.css             # Global design system
+└── js/
+    └── app.js              # Interactivity entry point
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 👨‍💻 Author
+
+**Mohammed Zomlot**  
+Backend Developer & DevOps Engineer | Laravel 
+📎 [GitHub @mohammedzom](https://github.com/mohammedzom)
+
+---
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT License](LICENSE).
