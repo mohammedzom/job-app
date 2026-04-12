@@ -155,6 +155,12 @@
             color: #fcd34d;
         }
 
+        .rs-ai-failed {
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.2);
+            color: #f87171;
+        }
+
         .rs-ai-dot {
             width: 5px; height: 5px;
             border-radius: 50%;
@@ -253,9 +259,13 @@
                                 <line x1="16" y1="17" x2="8" y2="17"/>
                             </svg>
                         </div>
-                        @if($resume->summary)
+                        @if($resume->status === 'analyzed')
                             <span class="rs-ai-status rs-ai-ready">
                                 <span class="rs-ai-dot"></span> AI Analyzed
+                            </span>
+                        @elseif($resume->status === 'failed')
+                            <span class="rs-ai-status rs-ai-failed">
+                                <span class="rs-ai-dot"></span> Failed
                             </span>
                         @else
                             <span class="rs-ai-status rs-ai-pending">

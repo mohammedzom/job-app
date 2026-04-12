@@ -120,7 +120,33 @@
             font-weight: 500;
         }
 
-        .rs-ai-banner svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .rs-ai-banner-failed {
+            background: rgba(239,68,68,.06);
+            border: 1px solid rgba(239,68,68,.2);
+            border-radius: .9rem;
+            padding: .85rem 1.2rem;
+            display: flex; align-items: center; gap: .65rem;
+            margin-bottom: 1.5rem;
+            font-size: .82rem;
+            color: #f87171;
+            font-weight: 500;
+        }
+
+        .rs-ai-banner-pending {
+            background: rgba(245,158,11,.06);
+            border: 1px solid rgba(245,158,11,.2);
+            border-radius: .9rem;
+            padding: .85rem 1.2rem;
+            display: flex; align-items: center; gap: .65rem;
+            margin-bottom: 1.5rem;
+            font-size: .82rem;
+            color: #fcd34d;
+            font-weight: 500;
+        }
+
+        .rs-ai-banner svg,
+        .rs-ai-banner-failed svg,
+        .rs-ai-banner-pending svg { width: 16px; height: 16px; flex-shrink: 0; }
 
         /* Section title */
         .rs-section-title {
@@ -298,17 +324,70 @@
             </div>
         </div>
 
-        @if($resume->is_analyzed)
+        @if($resume->status === 'analyzed')
             <div class="rs-ai-banner">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                 </svg>
                 AI analysis complete — your resume has been parsed and is ready for job matching.
             </div>
+        @elseif($resume->status === 'failed')
+            <div class="rs-ai-banner-failed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                AI analysis failed — please try re-uploading your resume.
+            </div>
+        @else
+            <div class="rs-ai-banner-pending">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                AI analysis in progress — please wait a moment.
+            </div>
         @endif
 
         <!-- Content grid -->
         <div class="rs-content-grid">
+
+            <!-- Contact Details (full width) -->
+            @php
+                $contact = is_array($resume->contact_details) ? $resume->contact_details : [];
+            @endphp
+            @if(count($contact) > 0)
+            <div class="rs-info-card full">
+                <div class="rs-section-title">
+                    <span class="marker" style="background:linear-gradient(180deg,#38bdf8,#7dd3fc);"></span>
+                    Contact Details
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:.65rem 2rem;">
+                    @if(isset($contact['name']))
+                        <div class="rs-info-body">
+                            <span style="color:rgba(255,255,255,.3);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.15rem;">Name</span>
+                            {{ $contact['name'] }}
+                        </div>
+                    @endif
+                    @if(isset($contact['email']))
+                        <div class="rs-info-body">
+                            <span style="color:rgba(255,255,255,.3);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.15rem;">Email</span>
+                            <a href="mailto:{{ $contact['email'] }}" style="color:#a5b4fc;text-decoration:none;">{{ $contact['email'] }}</a>
+                        </div>
+                    @endif
+                    @if(isset($contact['phone']))
+                        <div class="rs-info-body">
+                            <span style="color:rgba(255,255,255,.3);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.15rem;">Phone</span>
+                            {{ $contact['phone'] }}
+                        </div>
+                    @endif
+                    @if(isset($contact['location']))
+                        <div class="rs-info-body">
+                            <span style="color:rgba(255,255,255,.3);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.15rem;">Location</span>
+                            {{ $contact['location'] }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- Summary (full width) -->
             <div class="rs-info-card full">
