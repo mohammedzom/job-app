@@ -60,14 +60,6 @@ class JobApplicationsController extends Controller
                 return redirect()->back()->with('error', 'Please upload a resume.');
             }
 
-            // $ai_data = $this->resumeAnalysisService->extractResumeInfo($path);
-            // $extracted_data = [
-            //     'summary' => $ai_data['summary'],
-            //     'skills' => $ai_data['skills'],
-            //     'experience' => $ai_data['experience'],
-            //     'education' => $ai_data['education'],
-            // ];
-
             $resume = Resumes::create([
                 'user_id' => Auth::id(),
                 'file_name' => $fileOriginalName,
@@ -77,9 +69,9 @@ class JobApplicationsController extends Controller
                     'email' => Auth::user()->email,
                 ]),
                 'summary' => '',
-                'skills' => '',
-                'experience' => '',
-                'education' => '',
+                'skills' => [],
+                'experience' => [],
+                'education' => [],
             ]);
             $needExtractData = true;
             $resume_id = $resume->id;
@@ -92,8 +84,6 @@ class JobApplicationsController extends Controller
             $resume_id = $resume->id;
         }
 
-        // $ai_data = $this->resumeAnalysisService->analyzeResume($jobVacancy, $extracted_data);
-        // Log::debug('AI Data: '.json_encode($ai_data));
         $jobVacancy->increment('apply_count');
         $jobApplication = JobApplications::create([
             'job_id' => $id,

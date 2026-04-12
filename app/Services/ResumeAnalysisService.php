@@ -16,58 +16,122 @@ class ResumeAnalysisService
 {
     public function extractResumeInfo($file_path): array
     {
+        $emptyResult = [
+            'summary' => '',
+            'skills' => [],
+            'experience' => [],
+            'education' => [],
+        ];
+
         try {
             $raw_text = $this->extractTextFromPdf($file_path);
+
             $apiKey = env('GEMINI_API_KEY');
             if (empty($apiKey)) {
-                throw new \Exception('API key is not set');
+                throw new \Exception('GEMINI_API_KEY is not set');
             }
+
             $client = Gemini::client($apiKey);
 
-            // 1. (System Instruction)
-            $systemInstruction = 'You are a precise resume parser. Extract information exactly as it appears in the resume without adding any interpretation or additional information. The output should be in JSON format.';
+            $systemInstruction = 'You are a precise resume parser. Extract information exactly as it appears in the resume without adding any interpretation. The output must be valid JSON adhering strictly to the provided schema.';
 
-            // 2. (User Prompt)
-            $prompt = "Parse the following resume content and extract the information as a JSON Object with the exact keys: 'summary', 'skills', 'experience', 'education'. The resume content is:\n\n{$raw_text}\n\nReturn an empty string for any key that is not found.";
+            $prompt = <<<PROMPT
+        Parse the following resume content and extract ALL information accurately.
 
-            // 3. (Generation Config)
-            $generationConfig = new GenerationConfig(
-                temperature: 0.1,
-                responseMimeType: ResponseMimeType::APPLICATION_JSON
+        IMPORTANT:
+        - Do not skip any section, especially education and certifications.
+        - Extract all content verbatim, do not summarize or omit details.
+        - Education section may appear near the end of the resume.
+
+        Resume Content:
+        {$raw_text}
+        PROMPT;
+
+            $responseSchema = new Schema(
+                type: DataType::OBJECT,
+                properties: [
+                    'summary' => new Schema(type: DataType::STRING, description: 'Professional summary or objective.'),
+                    'skills' => new Schema(
+                        type: DataType::ARRAY,
+                        items: new Schema(type: DataType::STRING),
+                        description: 'Array of individual technical and soft skills.'
+                    ),
+                    'experience' => new Schema(
+                        type: DataType::ARRAY,
+                        items: new Schema(
+                            type: DataType::OBJECT,
+                            properties: [
+                                'company' => new Schema(type: DataType::STRING),
+                                'position' => new Schema(type: DataType::STRING),
+                                'start_date' => new Schema(type: DataType::STRING),
+                                'end_date' => new Schema(type: DataType::STRING),
+                                'responsibilities' => new Schema(type: DataType::STRING),
+                            ],
+                            required: ['company', 'position', 'start_date', 'end_date', 'responsibilities']
+                        ),
+                        description: 'Array of work experiences.'
+                    ),
+                    'education' => new Schema(
+                        type: DataType::ARRAY,
+                        items: new Schema(
+                            type: DataType::OBJECT,
+                            properties: [
+                                'degree' => new Schema(type: DataType::STRING),
+                                'university' => new Schema(type: DataType::STRING),
+                                'graduation_year' => new Schema(type: DataType::STRING),
+                                'field_of_study' => new Schema(type: DataType::STRING),
+                            ],
+                            required: ['degree', 'university', 'graduation_year', 'field_of_study']
+                        ),
+                        description: 'Array of educational background including degrees, universities, graduation years, AND any certifications. Extract even if located at the bottom of the resume. Only return empty array if absolutely no education information exists.'
+                    ),
+                ],
+                required: ['summary', 'skills', 'experience', 'education']
             );
 
-            // 4. (Call the model)
+            $generationConfig = new GenerationConfig(
+                temperature: 0.0,
+                responseMimeType: ResponseMimeType::APPLICATION_JSON,
+                responseSchema: $responseSchema
+            );
+
             $result = retry(3, function () use ($client, $systemInstruction, $generationConfig, $prompt) {
-                Log::debug('Calling Gemini API');
+                Log::debug('Calling Gemini API for resume extraction');
 
                 return $client
-                    ->generativeModel('gemini-3-flash-preview')
+                    ->generativeModel('gemini-3.1-flash-lite-preview')
                     ->withSystemInstruction(Content::parse($systemInstruction))
                     ->withGenerationConfig($generationConfig)
                     ->generateContent($prompt);
             }, 2000);
+
             $parseResult = json_decode($result->text(), true);
+
+            if (! is_array($parseResult)) {
+                throw new \Exception('Gemini response is not valid JSON');
+            }
+
             $requiredKeys = ['summary', 'skills', 'experience', 'education'];
             $missingKeys = array_diff($requiredKeys, array_keys($parseResult));
             if (! empty($missingKeys)) {
-                throw new \Exception('Missing required keys in parse result');
+                throw new \Exception('Missing required keys: '.implode(', ', $missingKeys));
             }
 
             return [
                 'summary' => $parseResult['summary'] ?? '',
-                'skills' => $parseResult['skills'] ?? '',
-                'experience' => $parseResult['experience'] ?? '',
-                'education' => $parseResult['education'] ?? '',
+                'skills' => $parseResult['skills'] ?? [],
+                'experience' => $parseResult['experience'] ?? [],
+                'education' => $parseResult['education'] ?? [],
             ];
-        } catch (\Exception $e) {
-            Log::debug('Error: '.$e->getMessage());
 
-            return [
-                'summary' => '',
-                'skills' => '',
-                'experience' => '',
-                'education' => '',
-            ];
+        } catch (\Exception $e) {
+            Log::error('Resume extraction failed', [
+                'file_path' => $file_path,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return $emptyResult;
         }
     }
 

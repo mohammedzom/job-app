@@ -30,7 +30,7 @@ class JobVacanciesController extends Controller
     {
         $user = Auth::user();
         $jobVacancy = JobVacancies::with('company')->findOrFail($id);
-        $resumes = $user->resumes;
+        $resumes = $user->resumes()->whereNull('deleted_at')->get();
         $job_id = $id;
 
         return view('job-vacancies.apply', compact('jobVacancy', 'resumes', 'job_id'));

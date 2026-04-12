@@ -1,286 +1,690 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Application Details') }}
-            </h2>
-            <a href="{{ route('job-applications.index') }}"
-                class="text-sm font-medium text-zinc-400 hover:text-white transition-colors flex items-center group">
-                <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to List
-            </a>
-        </div>
+        <h2>Application Details</h2>
     </x-slot>
 
-    <div class="py-12 text-white">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <style>
+        /* ── Page wrapper ── */
+        .jas-wrap {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 5rem;
+        }
 
-                {{-- Left Side: Analysis & Context --}}
-                <div class="lg:col-span-2 space-y-8">
+        /* ── Back link ── */
+        .jas-back {
+            display: inline-flex; align-items: center; gap: .4rem;
+            font-size: .82rem; font-weight: 500;
+            color: #818cf8; text-decoration: none;
+            margin-bottom: 2rem; transition: gap .2s, color .2s;
+        }
+        .jas-back svg { width: 14px; height: 14px; }
+        .jas-back:hover { gap: .65rem; color: #a5b4fc; }
 
-                    {{-- Header Card --}}
-                    <div
-                        class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-8">
-                            @php
-                                $status = $jobApplication->status;
-                                $statusStyles = match ($status) {
-                                    'pending' => 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-                                    'accepted' => 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-                                    'rejected' => 'bg-rose-500/10 text-rose-500 border-rose-500/20',
-                                    default => 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20',
-                                };
-                            @endphp
-                            <span
-                                class="px-4 py-1.5 text-xs font-black uppercase tracking-widest rounded-full border {{ $statusStyles }}">
-                                {{ $status }}
+        /* ── Two-col layout ── */
+        .jas-layout {
+            display: grid;
+            grid-template-columns: 1fr 22rem;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) { .jas-layout { grid-template-columns: 1fr; } }
+
+        /* ── Common card ── */
+        .jas-card {
+            background: rgba(15,23,42,.6);
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 1.15rem;
+            padding: 1.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ── Hero (job header) ── */
+        .jas-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #160d35 100%);
+            border: 1px solid rgba(99,102,241,.22);
+            border-radius: 1.15rem;
+            padding: 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+
+        .jas-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 80% at 95% 10%, rgba(99,102,241,.18), transparent);
+            pointer-events: none;
+        }
+
+        .jas-hero-inner { position: relative; z-index: 1; }
+
+        .jas-status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: .75rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .jas-status-badge {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .25rem .8rem;
+            font-size: .72rem; font-weight: 700;
+            letter-spacing: .07em; text-transform: uppercase;
+            border-radius: 9999px; border: 1px solid;
+        }
+
+        .jas-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .status-pending  { background: rgba(245,158,11,.1); color: #fbbf24; border-color: rgba(245,158,11,.3); }
+        .status-accepted { background: rgba(52,211,153,.1); color: #34d399; border-color: rgba(52,211,153,.3); }
+        .status-rejected { background: rgba(239,68,68,.1);  color: #f87171; border-color: rgba(239,68,68,.3); }
+
+        .jas-time-pill {
+            font-size: .75rem; color: rgba(255,255,255,.3); display: flex; align-items: center; gap: .35rem;
+        }
+        .jas-time-pill svg { width: 12px; height: 12px; }
+
+        .jas-hero-title {
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-weight: 800;
+            letter-spacing: -.03em;
+            color: #fff;
+            margin-bottom: .65rem;
+            line-height: 1.15;
+        }
+
+        .jas-hero-meta {
+            display: flex; flex-wrap: wrap; align-items: center; gap: .55rem;
+        }
+
+        .jas-hero-chip {
+            display: inline-flex; align-items: center; gap: .3rem;
+            font-size: .78rem; font-weight: 500;
+            padding: .28rem .75rem;
+            border-radius: 9999px;
+            white-space: nowrap;
+        }
+
+        .jas-hero-chip svg { width: 12px; height: 12px; opacity: .7; }
+        .jas-hero-chip-company { background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.25); color: #a5b4fc; }
+        .jas-hero-chip-loc     { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.55); }
+        .jas-hero-chip-type    { background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.2); color: #6ee7b7; }
+        .jas-hero-chip-salary  { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: #fbbf24; font-weight: 700; }
+
+        /* ── Section title ── */
+        .jas-section-title {
+            display: flex; align-items: center; gap: .45rem;
+            font-size: .82rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: rgba(255,255,255,.35);
+            margin-bottom: 1.1rem;
+        }
+
+        .jas-section-title .marker {
+            width: 3px; height: 14px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, #6366f1, #ec4899);
+        }
+
+        /* ── AI Analysis card ── */
+        .jas-ai-card {
+            background: rgba(99,102,241,.05);
+            border: 1px solid rgba(99,102,241,.15);
+            border-radius: 1.15rem;
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .jas-ai-header {
+            display: flex; align-items: center; gap: .75rem;
+            margin-bottom: 1.35rem;
+        }
+
+        .jas-ai-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: .75rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 16px rgba(99,102,241,.3);
+            flex-shrink: 0;
+        }
+
+        .jas-ai-icon svg { width: 18px; height: 18px; color: #fff; }
+
+        .jas-ai-header-text h3 {
+            font-size: 1rem; font-weight: 700; color: #e2e8f0; letter-spacing: -.01em;
+        }
+
+        .jas-ai-header-text p {
+            font-size: .75rem; color: rgba(255,255,255,.3); margin-top: .1rem;
+        }
+
+        .jas-ai-body {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        /* Score circle */
+        .jas-score-circle {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 2px solid rgba(99,102,241,.25);
+            background: rgba(99,102,241,.08);
+            flex-shrink: 0;
+        }
+
+        .jas-score-num {
+            font-size: 1.75rem; font-weight: 900; letter-spacing: -.04em; line-height: 1;
+        }
+
+        .jas-score-pct { font-size: .65rem; font-weight: 600; color: rgba(255,255,255,.3); margin-top: .1rem; }
+
+        .score-hi { background: linear-gradient(135deg, #34d399, #6ee7b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .score-md { background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .score-lo { background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* Feedback */
+        .jas-feedback-text {
+            font-size: .875rem;
+            color: rgba(255,255,255,.55);
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        /* ── Resume profile card ── */
+        .jas-profile-card {
+            background: rgba(15,23,42,.6);
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 1.15rem;
+            padding: 1.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Profile file badge */
+        .jas-file-pill {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .85rem;
+            background: rgba(99,102,241,.1);
+            border: 1px solid rgba(99,102,241,.2);
+            border-radius: 9999px;
+            font-size: .75rem; font-weight: 600; color: #a5b4fc;
+            text-decoration: none;
+            transition: all .2s;
+            margin-bottom: 1.35rem;
+        }
+        .jas-file-pill svg { width: 12px; height: 12px; }
+        .jas-file-pill:hover { background: rgba(99,102,241,.2); color: #c7d2fe; }
+
+        /* Summary block */
+        .jas-summary {
+            font-size: .875rem;
+            color: rgba(255,255,255,.6);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        /* Two-col sub-grid */
+        .jas-sub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        @media (max-width: 640px) { .jas-sub-grid { grid-template-columns: 1fr; } }
+
+        /* Skills tags */
+        .jas-skills-wrap {
+            display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem;
+        }
+
+        .jas-skill-tag {
+            display: inline-flex; align-items: center;
+            padding: .22rem .65rem;
+            font-size: .72rem; font-weight: 600;
+            background: rgba(99,102,241,.1);
+            border: 1px solid rgba(99,102,241,.22);
+            color: #a5b4fc;
+            border-radius: 9999px;
+        }
+
+        /* Education text */
+        .jas-edu-text {
+            font-size: .825rem;
+            color: rgba(255,255,255,.5);
+            line-height: 1.7;
+            margin-top: .55rem;
+        }
+
+        /* Experience block */
+        .jas-exp-block {
+            font-size: .825rem;
+            color: rgba(255,255,255,.5);
+            line-height: 1.75;
+        }
+
+        /* Experience item */
+        .jas-exp-item {
+            padding: .9rem 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+
+        .jas-exp-item:first-child { padding-top: 0; }
+        .jas-exp-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .jas-exp-role {
+            font-size: .88rem; font-weight: 700; color: #e2e8f0; margin-bottom: .1rem;
+        }
+
+        .jas-exp-company {
+            font-size: .78rem; color: #818cf8; font-weight: 600; margin-bottom: .2rem;
+        }
+
+        .jas-exp-dates {
+            font-size: .72rem; color: rgba(255,255,255,.25); margin-bottom: .5rem;
+        }
+
+        .jas-exp-achievements {
+            list-style: none; padding: 0; display: flex; flex-direction: column; gap: .3rem;
+        }
+
+        .jas-exp-achievements li {
+            display: flex; gap: .5rem; font-size: .78rem; color: rgba(255,255,255,.45); line-height: 1.6;
+        }
+
+        .jas-exp-achievements li::before {
+            content: '›';
+            color: #6366f1;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* No resume placeholder */
+        .jas-no-resume {
+            text-align: center; padding: 2rem;
+        }
+
+        .jas-no-resume svg { width: 32px; height: 32px; color: rgba(255,255,255,.15); margin: 0 auto .75rem; display: block; }
+        .jas-no-resume p { font-size: .85rem; color: rgba(255,255,255,.25); font-style: italic; }
+
+        /* ── RIGHT SIDEBAR ── */
+        .jas-sidebar { display: flex; flex-direction: column; gap: 1.1rem; }
+
+        /* Job snapshot */
+        .jas-snapshot-item {
+            display: flex; align-items: center; gap: .9rem;
+            padding: .85rem 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+        .jas-snapshot-item:first-child { padding-top: 0; }
+        .jas-snapshot-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .jas-snap-icon {
+            width: 36px; height: 36px;
+            border-radius: .65rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .jas-snap-icon svg { width: 16px; height: 16px; }
+
+        .jas-snap-label {
+            font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            color: rgba(255,255,255,.25); margin-bottom: .2rem;
+        }
+
+        .jas-snap-value {
+            font-size: .95rem; font-weight: 700; color: #e2e8f0;
+        }
+
+        .jas-snap-value .small { font-size: .72rem; font-weight: 400; color: rgba(255,255,255,.3); margin-left: .2rem; }
+
+        /* Actions */
+        .jas-action-dl {
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: .7rem 1.2rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff; font-size: .82rem; font-weight: 700;
+            border-radius: .75rem; text-decoration: none;
+            box-shadow: 0 0 18px rgba(99,102,241,.3);
+            transition: all .2s; width: 100%;
+        }
+
+        .jas-action-dl svg { width: 14px; height: 14px; }
+        .jas-action-dl:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(99,102,241,.45); }
+
+        .jas-action-archive {
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: .65rem 1.2rem;
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.08);
+            color: rgba(255,255,255,.35);
+            font-size: .82rem; font-weight: 600;
+            border-radius: .75rem; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all .2s; width: 100%;
+        }
+
+        .jas-action-archive svg { width: 14px; height: 14px; }
+        .jas-action-archive:hover { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: #f87171; }
+    </style>
+
+    <div class="jas-wrap">
+
+        <!-- Back -->
+        <a href="{{ route('job-applications.index') }}" class="jas-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back to Applications
+        </a>
+
+        @php
+            $score = $jobApplication->ai_generated_score;
+            $scoreClass = $score >= 70 ? 'score-hi' : ($score >= 40 ? 'score-md' : 'score-lo');
+            $status = $jobApplication->status;
+        @endphp
+
+        <div class="jas-layout">
+
+            <!-- ── LEFT COLUMN ── -->
+            <div>
+
+                <!-- Hero -->
+                <div class="jas-hero">
+                    <div class="jas-hero-inner">
+                        <div class="jas-status-row">
+                            <span class="jas-status-badge status-{{ $status }}">
+                                <span class="dot"></span>
+                                {{ Str::ucfirst($status) }}
+                            </span>
+                            <span class="jas-time-pill">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Applied {{ $jobApplication->created_at->diffForHumans() }}
                             </span>
                         </div>
 
-                        <div class="relative z-10">
-                            <h1 class="text-4xl font-black mb-4 leading-tight tracking-tight">
-                                {{ $jobApplication->job->title }}
-                            </h1>
-                            <div class="flex flex-wrap items-center text-zinc-400 gap-x-6 gap-y-2 mb-8">
-                                <span class="flex items-center font-bold text-blue-400">
-                                    {{ $jobApplication->job->company->name }}
-                                </span>
-                                <span class="flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-zinc-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    {{ $jobApplication->job->location }}
-                                </span>
-                                <span class="flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-zinc-600" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    Applied {{ $jobApplication->created_at->diffForHumans() }}
-                                </span>
-                            </div>
+                        <h1 class="jas-hero-title">{{ $jobApplication->job->title }}</h1>
+
+                        <div class="jas-hero-meta">
+                            <span class="jas-hero-chip jas-hero-chip-company">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                                {{ $jobApplication->job->company->name }}
+                            </span>
+                            <span class="jas-hero-chip jas-hero-chip-loc">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-8-7.5-8-13a8 8 0 0116 0c0 5.5-8 13-8 13z"/><circle cx="12" cy="8" r="3"/></svg>
+                                {{ $jobApplication->job->location }}
+                            </span>
+                            <span class="jas-hero-chip jas-hero-chip-type">
+                                {{ Str::ucfirst(str_replace('_', '-', $jobApplication->job->type)) }}
+                            </span>
+                            <span class="jas-hero-chip jas-hero-chip-salary">
+                                ${{ number_format($jobApplication->job->salary) }}/yr
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Analysis -->
+                <div class="jas-ai-card">
+                    <div class="jas-ai-header">
+                        <div class="jas-ai-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <div class="jas-ai-header-text">
+                            <h3>Intelligence Analysis</h3>
+                            <p>AI-Driven Resume Matching Insights</p>
                         </div>
                     </div>
 
-                    {{-- Intelligence Card --}}
-                    <div class="bg-blue-600/5 backdrop-blur-md border border-blue-500/10 rounded-3xl p-8">
-                        <div class="flex items-center space-x-4 mb-8">
-                            <div class="p-3 bg-blue-500 rounded-2xl shadow-lg shadow-blue-500/20 text-white">
-                                <svg class="w-8 h-8 font-black" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
+                    <div class="jas-ai-body">
+                        <!-- Score circle -->
+                        <div class="jas-score-circle">
+                            <span class="jas-score-num {{ $scoreClass }}">{{ $score }}</span>
+                            <span class="jas-score-pct">MATCH %</span>
+                        </div>
+
+                        <!-- Feedback -->
+                        @if($jobApplication->ai_generated_feedback && $jobApplication->ai_generated_feedback !== 'Analyzing...')
+                            <p class="jas-feedback-text">"{{ $jobApplication->ai_generated_feedback }}"</p>
+                        @else
+                            <p class="jas-feedback-text" style="color:rgba(255,255,255,.2);">Analysis is still processing. Check back in a moment.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Resume Profile -->
+                <div class="jas-profile-card">
+                    <div class="jas-section-title">
+                        <span class="marker"></span>
+                        Extracted Resume Profile
+                    </div>
+
+                    @if($jobApplication->resume)
+                        <!-- File link -->
+                        <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}" target="_blank" class="jas-file-pill">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            {{ $jobApplication->resume->file_name }}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+
+                        <!-- Professional Summary -->
+                        @if($jobApplication->resume->summary)
+                            <div class="jas-section-title" style="margin-bottom:.6rem;">
+                                <span class="marker" style="background:linear-gradient(180deg,#818cf8,#c084fc);"></span>
+                                Professional Summary
                             </div>
+                            <p class="jas-summary">{{ $jobApplication->resume->summary }}</p>
+                        @endif
+
+                        <!-- Skills + Education -->
+                        <div class="jas-sub-grid">
+                            <!-- Skills -->
                             <div>
-                                <h3 class="text-2xl font-black tracking-tight">Intelligence Analysis</h3>
-                                <p class="text-sm text-zinc-500 font-medium">AI-Driven Resume Matching Insights</p>
+                                <div class="jas-section-title" style="margin-bottom:.4rem;">
+                                    <span class="marker" style="background:linear-gradient(180deg,#34d399,#6ee7b7);"></span>
+                                    Key Skills
+                                </div>
+                                @php
+                                    $skills = is_array($jobApplication->resume->skills) ? $jobApplication->resume->skills : [];
+                                @endphp
+                                @if(count($skills) > 0)
+                                    <div class="jas-skills-wrap">
+                                        @foreach($skills as $skill)
+                                            @if(is_string($skill) && trim($skill))
+                                                <span class="jas-skill-tag">{{ trim($skill) }}</span>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="jas-edu-text" style="font-style:italic;color:rgba(255,255,255,.2);">No skills extracted.</p>
+                                @endif
+                            </div>
+
+                            <!-- Education -->
+                            <div>
+                                <div class="jas-section-title" style="margin-bottom:.4rem;">
+                                    <span class="marker" style="background:linear-gradient(180deg,#f59e0b,#fbbf24);"></span>
+                                    Education
+                                </div>
+                                @php
+                                    $eduItems = is_array($jobApplication->resume->education) ? $jobApplication->resume->education : [];
+                                @endphp
+                                @if(count($eduItems) > 0)
+                                    <div class="jas-edu-text">
+                                        @foreach($eduItems as $edu)
+                                            <div style="margin-bottom:.65rem;">
+                                                @if(isset($edu['degree']))
+                                                    <div style="font-weight:600;color:rgba(255,255,255,.6);font-size:.82rem;">{{ $edu['degree'] }}</div>
+                                                @endif
+                                                @if(isset($edu['field_of_study']))
+                                                    <div style="color:rgba(255,255,255,.45);font-size:.75rem;font-weight:500;">{{ $edu['field_of_study'] }}</div>
+                                                @endif
+                                                @if(isset($edu['university']))
+                                                    <div style="color:#818cf8;font-size:.75rem;font-weight:600;">{{ $edu['university'] }}</div>
+                                                @endif
+                                                @if(isset($edu['graduation_year']))
+                                                    <div style="color:rgba(255,255,255,.2);font-size:.7rem;">{{ $edu['graduation_year'] }}</div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="jas-edu-text" style="font-style:italic;color:rgba(255,255,255,.2);">No education info extracted.</p>
+                                @endif
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                            <div
-                                class="md:col-span-1 flex flex-col items-center justify-center p-6 bg-zinc-900/50 rounded-3xl border border-zinc-800">
-                                <span
-                                    class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 text-center">Match
-                                    Score</span>
-                                <div class="text-5xl font-black text-blue-500 mb-1 leading-none">
-                                    {{ $jobApplication->ai_generated_score }}%</div>
-                                <div class="h-1 w-12 bg-blue-500 rounded-full"></div>
-                            </div>
-                            <div class="md:col-span-3">
-                                <div class="relative">
-                                    <svg class="absolute -top-4 -left-2 w-10 h-10 text-blue-500/10 fill-current"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11.5M4 11.5V9C4 8.44772 4.44772 8 5 8H9C9.55228 8 10 8.44772 10 9V15C10 15.5523 9.55228 16 9 16H6C4.89543 16 4 16.8954 4 18V21" />
-                                    </svg>
-                                    <p class="text-lg text-zinc-300 leading-relaxed italic relative z-10 pl-4 py-2">
-                                        "{{ $jobApplication->ai_generated_feedback }}"
-                                    </p>
+                        <!-- Experience -->
+                        @if($jobApplication->resume->experience)
+                            <div>
+                                <div class="jas-section-title" style="margin-bottom:.6rem;">
+                                    <span class="marker" style="background:linear-gradient(180deg,#ec4899,#f9a8d4);"></span>
+                                    Experience
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if ($jobApplication->resume)
-                        {{-- Resume Details --}}
-                        <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
-                            <h3 class="text-xl font-bold mb-8 flex items-center">
-                                <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Extracted Resume Profile
-                            </h3>
-
-                            <div class="space-y-8">
-                                <div>
-                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
-                                        Professional
-                                        Summary</h4>
-                                    <p class="text-zinc-300 leading-relaxed">
-                                        {{ is_null($jobApplication->resume->summary) ? 'No summary' : $jobApplication->resume->summary }}
-                                    </p>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                @php
+                                    $expItems = is_array($jobApplication->resume->experience) ? $jobApplication->resume->experience : [];
+                                @endphp
+                                @if(count($expItems) > 0)
                                     <div>
-                                        <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Key
-                                            Skills</h4>
-                                        <div class="flex flex-wrap gap-2">
-                                            @php
-                                                $skills = is_null($jobApplication->resume->skills)
-                                                    ? []
-                                                    : explode(',', $jobApplication->resume->skills);
-                                            @endphp
-                                            @forelse ($skills as $skill)
-                                                <span
-                                                    class="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-700/50">
-                                                    {{ $skill }}
-                                                </span>
-                                            @empty
-                                                <span
-                                                    class="px-3 py-1 bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-700/50">
-                                                    No skills
-                                                </span>
-                                            @endforelse
-                                        </div>
+                                        @foreach($expItems as $exp)
+                                            <div class="jas-exp-item">
+                                                @if(isset($exp['position']))
+                                                    <div class="jas-exp-role">{{ $exp['position'] }}</div>
+                                                @endif
+                                                @if(isset($exp['company']))
+                                                    <div class="jas-exp-company">{{ $exp['company'] }}</div>
+                                                @endif
+                                                @if(isset($exp['start_date']) || isset($exp['end_date']))
+                                                    <div class="jas-exp-dates">
+                                                        {{ $exp['start_date'] ?? '' }}
+                                                        @if(isset($exp['start_date']) && isset($exp['end_date'])) &ndash; @endif
+                                                        {{ $exp['end_date'] ?? '' }}
+                                                    </div>
+                                                @endif
+                                                @if(isset($exp['responsibilities']) && $exp['responsibilities'])
+                                                    <ul class="jas-exp-achievements">
+                                                        <li>{{ $exp['responsibilities'] }}</li>
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
-                                            Education
-                                        </h4>
-                                        <p class="text-zinc-300 text-sm italic">
-                                            {{ is_null($jobApplication->resume->education) ? 'No education' : $jobApplication->resume->education }}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
-                                        Experience
-                                    </h4>
-                                    <div class="text-zinc-300 text-sm whitespace-pre-line leading-relaxed">
-                                        {{ is_null($jobApplication->resume->experience) ? 'No experience' : $jobApplication->resume->experience }}
-                                    </div>
-                                </div>
+                                @endif
                             </div>
-                        </div>
+                        @endif
+
                     @else
-                        <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
-                            <h3 class="text-xl font-bold mb-8 flex items-center">
-                                <svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Resume Details
-                            </h3>
-                            <p class="text-zinc-300 text-sm italic">Resume Deleted or Not Found</p>
+                        <!-- No resume -->
+                        <div class="jas-no-resume">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            <p>Resume was deleted or not attached to this application.</p>
                         </div>
                     @endif
                 </div>
 
-                {{-- Right Side: Job Context & Actions --}}
-                <div class="space-y-8">
+            </div>
 
-                    {{-- Quick Info --}}
-                    <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
-                        <h3 class="text-lg font-bold mb-6">Job Snapshot</h3>
-                        <div class="space-y-6">
-                            <div class="flex items-center">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mr-4">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Base
-                                        Salary</p>
-                                    <p class="text-lg font-bold text-white">
-                                        ${{ number_format($jobApplication->job->salary) }} <span
-                                            class="text-xs text-zinc-500 font-normal">/ Year</span></p>
-                                </div>
+            <!-- ── RIGHT SIDEBAR ── -->
+            <div class="jas-sidebar">
+
+                <!-- Job Snapshot -->
+                <div class="jas-card">
+                    <div class="jas-section-title">
+                        <span class="marker"></span>
+                        Job Snapshot
+                    </div>
+                    <div>
+                        <div class="jas-snapshot-item">
+                            <div class="jas-snap-icon" style="background:rgba(52,211,153,.1);color:#34d399;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                             </div>
-                            <div class="flex items-center">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center mr-4">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] text-zinc-500 uppercase font-black tracking-widest">
-                                        Employment Type</p>
-                                    <p class="text-lg font-bold text-white">
-                                        {{ str_replace('_', '-', ucfirst($jobApplication->job->type)) }}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center mr-4">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Deadline
-                                    </p>
-                                    <p class="text-lg font-bold text-white">
-                                        {{ \Carbon\Carbon::parse($jobApplication->job->application_deadline)->format('d M, Y') }}
-                                    </p>
+                            <div>
+                                <div class="jas-snap-label">Base Salary</div>
+                                <div class="jas-snap-value">
+                                    ${{ number_format($jobApplication->job->salary) }}
+                                    <span class="small">/ year</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    {{-- Actions Card --}}
-                    <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-3xl p-8">
-                        <h3 class="text-lg font-bold mb-6 text-center">Manage Application</h3>
-                        <div class="space-y-4">
-                            @if ($jobApplication->resume)
-                                <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}" target="_blank"
-                                    class="w-full flex items-center justify-center py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
-                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                    Full Resume View
-                                </a>
-                            @endif
-
-                            <form action="{{ route('job-applications.destroy', $jobApplication->id) }}"
-                                method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="w-full flex items-center justify-center py-4 px-6 bg-zinc-800 hover:bg-rose-500/10 hover:text-rose-500 text-zinc-400 font-bold text-sm uppercase tracking-widest rounded-2xl transition-all border border-zinc-700/50 hover:border-rose-500/30">
-                                    Archive Application
-                                </button>
-                            </form>
+                        <div class="jas-snapshot-item">
+                            <div class="jas-snap-icon" style="background:rgba(99,102,241,.1);color:#818cf8;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                            </div>
+                            <div>
+                                <div class="jas-snap-label">Employment Type</div>
+                                <div class="jas-snap-value">{{ Str::ucfirst(str_replace('_', '-', $jobApplication->job->type)) }}</div>
+                            </div>
+                        </div>
+                        @if($jobApplication->job->application_deadline)
+                            <div class="jas-snapshot-item">
+                                <div class="jas-snap-icon" style="background:rgba(245,158,11,.1);color:#fbbf24;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                </div>
+                                <div>
+                                    <div class="jas-snap-label">Deadline</div>
+                                    <div class="jas-snap-value">{{ \Carbon\Carbon::parse($jobApplication->job->application_deadline)->format('d M, Y') }}</div>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="jas-snapshot-item">
+                            <div class="jas-snap-icon" style="background:rgba(139,92,246,.1);color:#a78bfa;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <div>
+                                <div class="jas-snap-label">Applied</div>
+                                <div class="jas-snap-value" style="font-size:.85rem;">{{ $jobApplication->created_at->format('d M Y') }}</div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
+
+                <!-- Actions -->
+                <div class="jas-card">
+                    <div class="jas-section-title" style="margin-bottom:1rem;">
+                        <span class="marker"></span>
+                        Manage Application
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:.65rem;">
+                        @if($jobApplication->resume)
+                            <a href="{{ asset('storage/' . $jobApplication->resume->file_url) }}" target="_blank" class="jas-action-dl">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                View Full Resume
+                            </a>
+                        @endif
+                        <form action="{{ route('job-applications.destroy', $jobApplication->id) }}" method="POST">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="jas-action-archive">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M23 3H1v5h22V3z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                                Archive Application
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- View vacancy -->
+                <a href="{{ route('job-vacancies.show', $jobApplication->job->id) }}"
+                   style="display:flex;align-items:center;justify-content:center;gap:.45rem;padding:.65rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:.9rem;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.35);text-decoration:none;transition:all .2s;"
+                   onmouseover="this.style.color='rgba(255,255,255,.7)';this.style.background='rgba(255,255,255,.06)'"
+                   onmouseout="this.style.color='rgba(255,255,255,.35)';this.style.background='rgba(255,255,255,.03)'">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    View Job Vacancy
+                </a>
+
             </div>
         </div>
     </div>
