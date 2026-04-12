@@ -217,6 +217,19 @@ Backend Developer & DevOps Engineer | Laravel
 
 ---
 
+## 📦 Releases & Versioning
+
+This project follows [Semantic Versioning](https://semver.org/). We use GitHub Releases to distribute stable versions of the application.
+
+To see the latest changes, features, and bug fixes, please visit the [Releases page](https://github.com/mohammedzom/job-app/releases). 
+
+Each release contains:
+- Detailed Changelog.
+- Source code (zip/tar.gz).
+- Instructions for upgrading from previous versions (if applicable).
+
+---
+
 ## 📄 License
 
 This project is open-sourced software licensed under the [MIT License](LICENSE).
