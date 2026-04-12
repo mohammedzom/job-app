@@ -9,6 +9,9 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3-77C1D2?style=flat-square&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Releases](https://img.shields.io/github/v/release/mohammedzom/job-app?style=flat-square&color=blue)](https://github.com/mohammedzom/job-app/releases)
+
+**🚀 Live Demo:** [https://mohammedzom.online](https://mohammedzom.online)
 
 </div>
 
@@ -22,6 +25,17 @@ This project delivers a premium "Cosmic Dark" UI experience, ensuring responsive
 
 > **Backend:** Fully developed by **[@mohammedzom](https://github.com/mohammedzom)**  
 > **Frontend / UI:** Designed with the assistance of **AI (Claude by Anthropic / Gemini)**
+
+---
+
+## 🔐 Live Demo & Test Credentials
+
+You can test the live application using the following seeded account. This account provides access to explore the job seeker features, including profile management, AI resume parsing, and job applications.
+
+- **URL:** [https://mohammedzom.online](https://mohammedzom.online)
+- **Email:** `test@job.com`
+- **Password:** `12345678@` 
+> *(Note: The database is periodically reset. Feel free to register a new account to test the full onboarding process).*
 
 ---
 
